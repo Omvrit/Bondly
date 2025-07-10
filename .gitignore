@@ -1,0 +1,73 @@
+# ---- FLUTTER ----
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/ServiceDefinitions.json
+android/.gradle/
+android/app/build/
+.idea/
+*.iml
+*.ipr
+*.iws
+.melody/
+*.lock
+
+# Flutter generated plugin symlinks
+.symlinks/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+
+# Visual Studio Code
+.vscode/
+
+# MacOS
+macos/Flutter/ephemeral/
+macos/Pods/
+macos/Runner.xcworkspace/
+
+# Web
+web/GeneratedPluginRegistrant.dart
+
+# Windows
+windows/runner/ephemeral/
+
+# Linux
+linux/ephemeral/
+
+# Fuchsia
+.fuchsia/
+
+# Others
+*.log
+
+# ---- NODE.JS ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+.env
+.env.*
+dist/
+coverage/
+.cache/
+.next/
+out/
+functions/lib/
+
+# Optional if using Firebase Functions
+functions/node_modules/
+
+# ---- SYSTEM FILES ----
+.DS_Store
+Thumbs.db

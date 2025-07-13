@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user.dart';
 import '../models/auth.dart';
+import '../services/socket_io_service.dart';
 
 class AuthService {
-  static const String baseUrl = "http://192.168.150.102:5000/api/auth";
+  static const String baseUrl = "http://192.168.200.102:5000";
   
   Future<AuthResponse> register(String username, String email, String password) async {
     final response = await http.post(
@@ -35,6 +37,7 @@ class AuthService {
     );
     
     if (response.statusCode == 200) {
+      
       return AuthResponse.fromJson(json.decode(response.body));
     } else {
       throw Exception(json.decode(response.body)['error'] ?? 'Login failed');

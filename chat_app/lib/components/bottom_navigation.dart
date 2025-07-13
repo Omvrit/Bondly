@@ -22,6 +22,10 @@ class ChatBottomNavigation extends StatelessWidget {
           icon: Icon(Icons.people), label: 'Contacts'),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person), label: 'Profile'),
+        
+        
       ],
     );
   }

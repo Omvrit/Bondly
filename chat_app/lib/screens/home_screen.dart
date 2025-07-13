@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/connection_service.dart';
-import '../../models/connection.dart';
+import '../models/user.dart';
 import '../components/user_profile_header.dart';
 import '../components/chat_list.dart';
 import '../components/search_bar.dart';
 import '../components/bottom_navigation.dart';
-import '../components/connection_modal.dart';
+import '../components/make_connections_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,26 +19,28 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final TextEditingController _searchController = TextEditingController();
-  List<Connection> _connections = [];
-  List<Connection> _filteredConnections = [];
+  List<User> _connections = [];
+  List<User> _filteredConnections = [];
   bool _isLoading = true;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadConnections();
+    _loadConversations();
   }
 
-  Future<void> _loadConnections() async {
+  Future<void> _loadConversations() async {
     final authProvider = context.read<AuthProvider>();
     final connectionService = ConnectionService(
-      baseUrl: 'http://192.168.150.102:5000/api/auth', // Replace with your API URL
+      baseUrl: 'http://192.168.200.102:5000', // Replace with your API URL
       authToken: authProvider.tokens!.accessToken,
     );
 
+
     try {
       final connections = await connectionService.getConnections();
+      
       setState(() {
         _connections = connections;
         _filteredConnections = connections;
@@ -55,14 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onSearch(String query) {
     setState(() {
       _filteredConnections = _connections.where((connection) {
-        return connection.name.toLowerCase().contains(query.toLowerCase()) ||
+        return connection.username.toLowerCase().contains(query.toLowerCase()) ||
             connection.email.toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
 
-  void _onChatSelected(String connectionId) {
-    Navigator.pushNamed(context, '/chat/$connectionId');
+  void _onChatSelected(String userName,String userId) {
+    Navigator.pushNamed(context, '/chat/$userId/$userName');
   }
 
   void _showAddConnectionModal() {
@@ -86,15 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat App'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => authProvider.logout(),
-          ),
-        ],
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -102,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               : Column(
                   children: [
                     if (_currentIndex == 0) ...[
-                      const UserProfileHeader(),
+                      
                       ChatSearchBar(
                         controller: _searchController,
                         onSearch: _onSearch,
@@ -112,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           chats: _filteredConnections.map((connection) {
                             return ChatItem(
                               id: connection.id,
-                              name: connection.name,
+                              name: connection.username,
                               avatar: connection.avatar,
                               lastMessage: connection.isOnline
                                   ? 'Online'
@@ -121,6 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }).toList(),
                           onChatSelected: _onChatSelected,
+                          
+                         
                         ),
                       ),
                     ] else if (_currentIndex == 1) ...[
@@ -144,14 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.add),
             )
           : null,
-      bottomNavigationBar: ChatBottomNavigation(
-        currentIndex: _currentIndex,
-        onTabChange: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      
     );
   }
 

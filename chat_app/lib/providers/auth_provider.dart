@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/auth.dart';
-import '../models/connection.dart';
+import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../services/connection_service.dart';
 
@@ -12,7 +12,7 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   Timer? _tokenRefreshTimer;
-  List<Connection> _connections = [];
+  List<User> _connections = [];
   bool _connectionsLoading = false;
   String? _connectionsError;
 
@@ -21,7 +21,7 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isAuthenticated => _user != null && _tokens != null;
-  List<Connection> get connections => _connections;
+  List<User> get connections => _connections;
   bool get connectionsLoading => _connectionsLoading;
   String? get connectionsError => _connectionsError;
 
@@ -62,7 +62,7 @@ class AuthProvider with ChangeNotifier {
     
     try {
       final connectionService = ConnectionService(
-        baseUrl: 'https://your-api-url.com',
+        baseUrl: 'http://192.168.150.102:5000',
         authToken: _tokens!.accessToken,
       );
       _connections = await connectionService.getConnections();
@@ -84,7 +84,7 @@ class AuthProvider with ChangeNotifier {
     
     try {
       final connectionService = ConnectionService(
-        baseUrl: 'https://your-api-url.com',
+        baseUrl: 'http://192.168.150.102:5000/',
         authToken: _tokens!.accessToken,
       );
       await connectionService.addConnection(userId);
@@ -123,6 +123,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
+    print("email: $email, password: $password");
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -136,9 +137,9 @@ class AuthProvider with ChangeNotifier {
       await AuthService.saveUser(response.user);
       
       _startTokenRefreshTimer();
-      await _loadConnections(); // Load connections after login
+      // await _loadConnections(); // Load connections after login
     } catch (e) {
-      _error = e.toString();
+      _error = "Error message:"+e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();

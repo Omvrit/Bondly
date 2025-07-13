@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email']
+    
   },
   password: {
     type: String,
@@ -28,20 +28,40 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
   },
-  status: {
-    type: String,
-    enum: ['online', 'offline', 'away'],
-    default: 'offline'
+  online: {
+    type: Boolean,
+    default: false
   },
+
   lastSeen: {
     type: Date,
     default: Date.now
   },
-  refreshToken: String,
+  conversations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' ,default: []}],
 
+  
+  
+  
+  notifications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Notification', default: [] }],
+  
+  
   // NEW: for scalability
-  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  blocked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  // groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }],
+  // groupConnections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GroupConnection' }],
+  // groupNotifications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GroupNotification' }],
+  
+  
+
+  
+  refreshToken: String,
+  lastRefreshAt: {
+    type: Date,
+    default: new Date(0) // so first refresh always works
+  }
+
+  
+  
+  
 }, { timestamps: true });
 
 // Hash password
@@ -58,7 +78,7 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 // Generate JWT
 userSchema.methods.generateAuthToken = function() {
-  const accessToken = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  const accessToken = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
   const refreshToken = jwt.sign({ id: this._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
   return { accessToken, refreshToken };
 };

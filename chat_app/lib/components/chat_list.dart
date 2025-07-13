@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ChatList extends StatelessWidget {
   final List<ChatItem> chats;
-  final Function(String) onChatSelected;
+  final Function(String, String) onChatSelected;
   
   const ChatList({
     super.key,
@@ -31,7 +31,7 @@ class ChatList extends StatelessWidget {
               chat.time,
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
-            onTap: () => onChatSelected(chat.id),
+            onTap: () => onChatSelected(chat.id, chat.name),
           );
         },
       ),
@@ -45,6 +45,7 @@ class ChatItem {
   final String avatar;
   final String lastMessage;
   final String time;
+  final bool? isOnline;
 
   ChatItem({
     required this.id,
@@ -52,5 +53,6 @@ class ChatItem {
     required this.avatar,
     required this.lastMessage,
     required this.time,
+    this.isOnline,
   });
 }
